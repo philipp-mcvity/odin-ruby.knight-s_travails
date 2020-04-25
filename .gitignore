@@ -1,2 +1,6 @@
 # ignore test file
 /lib/knight_test.rb
+
+# ignore file with backup of methods which aren't in use,
+# but might be useful somewhen else
+/neat_methods.rb

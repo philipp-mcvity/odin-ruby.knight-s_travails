@@ -40,7 +40,6 @@ class Knight < ChessPiece
   def find_path(target)
     queue = [self]
     until (move = queue.shift).targets.include? target
-      queue = looking_for_target(queue, target)
       move.targets.each { |coord| queue << Knight.new(coord, move) }
     end
     path = [target, move.coord]
@@ -49,17 +48,5 @@ class Knight < ChessPiece
       move = move.creator
     end
     path
-  end
-
-  def looking_for_target(queue, target)
-    includes_target = nil
-    queue.each_with_index do |k, i|
-      if k.targets.include? target
-        includes_target = k
-        queue.delete_at(i)
-      end
-      break if includes_target
-    end
-    queue = (includes_target ? queue.unshift(includes_target) : queue)
   end
 end

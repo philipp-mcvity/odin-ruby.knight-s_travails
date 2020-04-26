@@ -18,6 +18,19 @@ class ChessPiece
     targets.reject { |e| invalid?(e) }
   end
 
+  def find_path(target)
+    queue = [self]
+    until (move = queue.shift).targets.include? target
+      move.targets.each { |coord| queue << Knight.new(coord, move) }
+    end
+    path = [target, move.coord]
+    until move.creator == 'root'
+      path << move.creator.coord
+      move = move.creator
+    end
+    path
+  end
+
   def invalid?(coord)
     return true unless coord.is_a?(Array) && coord.size == 2
 

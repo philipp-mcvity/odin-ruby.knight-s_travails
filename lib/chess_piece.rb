@@ -38,14 +38,11 @@ class ChessPiece
 
   def clean_queue(queue, target, new_objects)
     has_target = nil
-    queue[new_objects..-1].each_with_index do |k, i|
-      if k.targets.include? target
-        has_target = k
-        queue.delete_at(i)
-      end
+    queue[new_objects..-1].each do |k|
+      has_target = k if k.targets.include?(target)
       break if has_target
     end
-    queue = (has_target ? queue.unshift(has_target) : queue).uniq(&:coord)
+    (has_target ? queue.unshift(has_target) : queue).uniq(&:coord)
   end
 
   def invalid?(coord)

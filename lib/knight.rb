@@ -11,7 +11,7 @@ class Knight < ChessPiece
     move_to(start) unless no_start
     path = find_path(target)
     "#{coord} to #{target} is possible in #{path.size - 1} moves:\n
-#{path.reverse.map!(&:to_s).join(' -> ')}"
+#{path.reverse.map(&:to_s).join(' -> ')}"
   end
 
   def self.all
@@ -39,14 +39,27 @@ class Knight < ChessPiece
 
   def find_path(target)
     queue = [self]
-    until (move = queue.shift).coord == target
+    until (move = queue.shift).targets.include? target
+      queue = looking_for_target(queue, target)
       move.targets.each { |coord| queue << Knight.new(coord, move) }
     end
-    path = [target]
+    path = [target, move.coord]
     until move.creator == 'root'
       path << move.creator.coord
       move = move.creator
     end
     path
+  end
+
+  def looking_for_target(queue, target)
+    includes_target = nil
+    queue.each_with_index do |k, i|
+      if k.targets.include? target
+        includes_target = k
+        queue.delete_at(i)
+      end
+      break if includes_target
+    end
+    queue = (includes_target ? queue.unshift(includes_target) : queue)
   end
 end

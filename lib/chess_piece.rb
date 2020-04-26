@@ -22,13 +22,30 @@ class ChessPiece
     queue = [self]
     until (move = queue.shift).targets.include? target
       move.targets.each { |coord| queue << Knight.new(coord, move) }
+      queue = clean_queue(queue, target, move.targets.size * -1)
     end
+    return_path(target, move)
+  end
+
+  def return_path(target, move)
     path = [target, move.coord]
     until move.creator == 'root'
       path << move.creator.coord
       move = move.creator
     end
     path
+  end
+
+  def clean_queue(queue, target, new_objects)
+    has_target = nil
+    queue[new_objects..-1].each_with_index do |k, i|
+      if k.targets.include? target
+        has_target = k
+        queue.delete_at(i)
+      end
+      break if has_target
+    end
+    queue = (has_target ? queue.unshift(has_target) : queue).uniq(&:coord)
   end
 
   def invalid?(coord)
